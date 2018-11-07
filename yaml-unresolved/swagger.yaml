@@ -7,18 +7,12 @@ info:
   contact:
     email: tuantu.t@gmail.com
 
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-
-# tags are used for organizing operations
-tags:
-- name: admins
-  description: Secured Admin-only calls
-- name: developers
-  description: Operations available to regular developers
-
 paths:
+  /login:
+    get:
+      summary: get the list of users for login
+      operationId: getUsers
+      description: Return a list of users to choose from at login
   /inventory:
     get:
       tags:
