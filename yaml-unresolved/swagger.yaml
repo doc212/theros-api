@@ -19,17 +19,35 @@ paths:
           schema:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  type: number
-                fullname:
-                  type: string
-                admin:
-                  type: boolean
-                password:
-                  type: string
-                    
+              $ref: '#/definitions/User'
+    post:
+      summary: submit user input credentials
+      operationId: postLogin
+      description: Validates user login and password to return a token
+      parameters: 
+      - in: body
+        name: loginRequest
+        required: true
+        schema:
+          type: object
+          properties:
+            id:
+              type: number
+              description: the id of the user
+            password:
+              type: string
+              description: the password of the user
+          
+      responses:
+        200:
+          description: a successful login request response
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              user:
+                $ref: "#/definitions/User"
   /inventory:
     get:
       tags:
@@ -93,6 +111,17 @@ paths:
         409:
           description: an existing item already exists
 definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: number
+      fullname:
+        type: string
+      admin:
+        type: boolean
+      password:
+        type: string
   InventoryItem:
     type: object
     required:
