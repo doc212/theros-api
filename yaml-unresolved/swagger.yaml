@@ -10,6 +10,7 @@ info:
 paths:
   /login:
     get:
+      tags: [login]
       summary: get the list of users for login
       operationId: getUsers
       description: Return a list of users to choose from at login
@@ -19,115 +20,83 @@ paths:
           schema:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  type: number
-                fullname:
-                  type: string
-                admin:
-                  type: boolean
-                password:
-                  type: string
-                    
-  /inventory:
-    get:
-      tags:
-      - developers
-      summary: searches inventory
-      operationId: searchInventory
-      description: |
-        By passing in the appropriate options, you can search for
-        available inventory in the system
-      produces:
-      - application/json
-      parameters:
-      - in: query
-        name: searchString
-        description: pass an optional search string for looking up inventory
-        required: false
-        type: string
-      - in: query
-        name: skip
-        description: number of records to skip for pagination
-        type: integer
-        format: int32
-        minimum: 0
-      - in: query
-        name: limit
-        description: maximum number of records to return
-        type: integer
-        format: int32
-        minimum: 0
-        maximum: 50
+              $ref: '#/definitions/User'
+    post:
+      tags: [login]
+      summary: submit user input credentials
+      operationId: postLogin
+      description: Validates user login and password to return a token
+      parameters: 
+      - in: body
+        name: loginRequest
+        required: true
+        schema:
+          type: object
+          properties:
+            id:
+              type: number
+              description: the id of the user
+            password:
+              type: string
+              description: the password of the user
+          
       responses:
         200:
-          description: search results matching criteria
+          description: a successful login request response
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              user:
+                $ref: "#/definitions/User"
+  /works:
+    get:
+      tags: [works]
+      summary: get the list of works for a user
+      operationId: getWorks
+      description: Return the list of works that relate to a subject taught by the current user
+      externalDocs:
+        url: https://github.com/doc212/theros-api/wiki/getWorks
+      responses:
+        200:
+          description: a list of works
           schema:
             type: array
             items:
-              $ref: '#/definitions/InventoryItem'
-        400:
-          description: bad input parameter
-    post:
-      tags:
-      - admins
-      summary: adds an inventory item
-      operationId: addInventory
-      description: Adds an item to the system
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: inventoryItem
-        description: Inventory item to add
-        schema:
-          $ref: '#/definitions/InventoryItem'
-      responses:
-        201:
-          description: item created
-        400:
-          description: invalid input, object invalid
-        409:
-          description: an existing item already exists
+              type: object
+              properties:
+                student:
+                  type: string
+                  description: The full name of the student
+                class:
+                  type: string
+                  description: The description of the class of the student
+                type:
+                  type: string
+                  enum: ["TDV, RAN"]
+                  description: The type of work
+                subject:
+                  type: string
+                  description: The subject of the work
+                teacher:
+                  type: string
+                  description: The full name of the teacher
+                result:
+                  type: string
+                  description: The result of the work
 definitions:
-  InventoryItem:
+  User:
     type: object
-    required:
-    - id
-    - name
-    - manufacturer
-    - releaseDate
     properties:
       id:
+        type: number
+      fullname:
         type: string
-        format: uuid
-        example: d290f1ee-6c54-4b01-90e6-d701748f0851
-      name:
+      admin:
+        type: boolean
+      password:
         type: string
-        example: Widget Adapter
-      releaseDate:
-        type: string
-        format: date-time
-        example: 2016-08-29T09:12:33.001Z
-      manufacturer:
-        $ref: '#/definitions/Manufacturer'
-  Manufacturer:
-    required:
-    - name
-    properties:
-      name:
-        type: string
-        example: ACME Corporation
-      homePage:
-        type: string
-        format: url
-        example:  https://www.acme-corp.com
-      phone:
-        type: string
-        example: 408-867-5309
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
 basePath: /doc212/Theros/1.0.0
